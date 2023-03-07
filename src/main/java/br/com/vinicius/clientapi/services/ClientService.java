@@ -24,10 +24,28 @@ public class ClientService {
 		Page<ClientEntity> clients = clientRepository.findAll(pageRequest);
 		return clients.map(x -> new ClientDTO(x));
 	}
-
+	
+	@Transactional(readOnly = true)
 	public ClientDTO findById(Long id) {
 		Optional<ClientEntity> result = clientRepository.findById(id);
 		ClientEntity entity = result.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
 		return  new ClientDTO(entity);
+	}
+	
+	@Transactional
+	public ClientDTO insert(ClientDTO dto) {
+		ClientEntity entity = new ClientEntity();
+		copyDtoToEntity(dto, entity);
+		entity = clientRepository.save(entity);
+		return new ClientDTO(entity);
+		
+	}
+	
+	private void copyDtoToEntity(ClientDTO dto, ClientEntity entity) {
+		entity.setName(dto.getName());
+		entity.setCpf(dto.getCpf());
+		entity.setIncome(dto.getIncome());
+		entity.setBirthDate(dto.getBirthDate());
+		entity.setChildren(dto.getChildren());
 	}
 }
