@@ -2,6 +2,9 @@ package br.com.vinicius.clientapi.dtos;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import br.com.vinicius.clientapi.entities.ClientEntity;
 
@@ -13,9 +16,10 @@ public class ClientDTO implements Serializable{
 	private String name;
 	private String cpf;
 	private Double income;
-	
 	private Instant birthDate;
 	private Integer children;
+	
+	private List<ClientDTO> clients = new ArrayList<>();
 	
 	public ClientDTO() {
 	}
@@ -36,6 +40,11 @@ public class ClientDTO implements Serializable{
 		this.income = entity.getIncome();
 		this.birthDate = entity.getBirthDate();
 		this.children = entity.getChildren();
+	}
+	
+	public ClientDTO(ClientEntity entity, Set<ClientEntity> clients) {
+		this(entity);
+		clients.forEach(x -> this.clients.add(new ClientDTO(x)));
 	}
 	
 	public Long getId() {
