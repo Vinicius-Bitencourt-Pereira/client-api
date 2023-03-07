@@ -2,6 +2,8 @@ package br.com.vinicius.clientapi.services;
 
 import java.util.Optional;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,11 +43,25 @@ public class ClientService {
 		
 	}
 	
+	@Transactional
 	private void copyDtoToEntity(ClientDTO dto, ClientEntity entity) {
 		entity.setName(dto.getName());
 		entity.setCpf(dto.getCpf());
 		entity.setIncome(dto.getIncome());
 		entity.setBirthDate(dto.getBirthDate());
 		entity.setChildren(dto.getChildren());
+	}
+
+	@Transactional
+	public ClientDTO update(Long id, ClientDTO dto) {
+		try {
+			ClientEntity entity = clientRepository.getOne(id);
+			copyDtoToEntity(dto, entity);
+			entity = clientRepository.save(entity);
+			return new ClientDTO(entity);
+		}
+		catch(EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Id not found " + id);
+		}
 	}
 }
